@@ -1,0 +1,15 @@
+.back{
+    position: absolute; 
+    left: 0px;
+    top: 0px;
+    width:100%;
+}
+body{
+    overflow: hidden;
+}
+#bileD{
+    /* width: 200px; */
+}
+#chick{
+    /* width: 40px; */
+}
