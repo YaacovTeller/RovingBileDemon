@@ -253,10 +253,6 @@ window.addEventListener('keydown', function (e) {
     keys = (keys || []);
     keys[e.keyCode] = true;
     keyCommands(e);
-    if (e.keyCode == 49) {
-        Fart1.play();
-  //      BileDie.play();
-    }
 })
 window.addEventListener('keyup', function (e) {
     keys[e.keyCode] = false;
