@@ -12,14 +12,28 @@
     <title>Roving Bile Demon</title>
 </head>
 <body>
-    <div id="chickCount">0</div>
+    <div id="playerScore">0</div>
+    <div id="enemyScore">0</div>
     <div id="dungeon">
         <img src="Pics/Tiles2.png" class="back">
-        <img id="bileD" src="Bile gifs/Bile_S frames/1.gif" style="position:absolute;top:300px; left: 300px" />
+        <img id="bileD" src="Bile gifs/frames/Bile_S frame.gif" style="position:absolute;top:300px; left: 300px" />
         <!-- <img id="chick" src="Pics/chicken.gif" style="position:absolute;top:300px; left: 500px" /> -->
     </div>
-    <div id="test"></div>
-    <script src="TS.js"></script>
+    <div id="bileModal" class="modal">
+        <div class="modal-content">
+          
+          <button onclick="begin()">Release the Bile Demon!</button>
+          <p>You were warned...</p>
+        </div>
+    </div>
+
+
+    <div id="newChickBox"></div>
+    <div id="newThiefBox"></div>
+    <script src="Classes.js"></script>
+    <script src="Funcs.js"></script>
+    <script src="Keys.js"></script>
+    <script src="SoundScript.js"></script>
 </body>
 
 </html>
