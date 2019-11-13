@@ -10,7 +10,7 @@ body {
 }
 
 #playerScore {
-    color: azure;
+    color: whitesmoke;
     position: absolute;
     padding: 20px;
     z-index: 1;
