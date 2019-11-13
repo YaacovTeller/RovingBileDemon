@@ -1,15 +1,88 @@
-.back{
-    position: absolute; 
+.back {
+    position: absolute;
     left: 0px;
     top: 0px;
-    width:100%;
+    width: 100%;
 }
-body{
+
+body {
     overflow: hidden;
 }
-#bileD{
-    /* width: 200px; */
+
+#playerScore {
+    color: azure;
+    position: absolute;
+    padding: 20px;
+    z-index: 1;
+    font-size: 40px;
+    font-family: impact;
+    /* font: 30px, impact; */
 }
-#chick{
-    /* width: 40px; */
+
+#enemyScore {
+    color: red;
+    position: absolute;
+    right: 0;
+    /* float: right; */
+    padding: 20px;
+    z-index: 1;
+    font-size: 40px;
+    font-family: impact;
+    /* font: 30px, impact; */
 }
+
+.modal {
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+/* Modal Content/Box */
+.modal-content {
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    background-color: grey;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 20px;
+    width: 50%; /* Could be more or less, depending on screen size */
+}
+
+    .modal-content p {
+        font: 15px arial, sans-serif;
+    }
+
+    .modal-content button {
+        background-color: darkred;
+        border-radius: 20px;
+        font-size: 40px;
+        width: 300px;
+        height: 200px;
+        cursor: pointer;
+    }
+
+        .modal-content button:hover {
+            background-color: red;
+            /* font-size: 45px; */
+            transform: scale(0.9);
+        }
+
+            .modal-content button:hover + .modal-content p {
+                transform: scale(1.2);
+            }
+
+.sizeAdjustForBileEatingGif {
+    transform: scale(0.5);
+}
+
+/*#bileD {
+     width: 200px; 
+}
+#chick {
+     width: 40px; 
+}*/
