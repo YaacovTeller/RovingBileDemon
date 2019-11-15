@@ -247,6 +247,9 @@ function finishEatingSetPic(objectInst) {////   make generic  ////
             objectInst.stopMoving()
             objectInst.domElement.setAttribute("src", `${myClass} gifs/frames/${myClass}_SE frame.gif`);
         }
+        else {
+            objectInst.startMoving();//Attempt to change from eating pic. Bad idea
+        }
         //    biledemon.domElement.style.left = parseInt(biledemon.domElement.style.left) - 50 +"px";
         //      biledemon.height = biledemon.height / 0.9;
     }, 1200);
