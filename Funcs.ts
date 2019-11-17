@@ -52,26 +52,30 @@ function chase(chaser: Thief, target: chicken) {
     };
     setMovingFlag(chaser);
     setPicAndSound(chaser);
-    var targetLeft = parseInt(target.domElement.style.left)
-    var targetTop = parseInt(target.domElement.style.top)
-    var chaserLeft = parseInt(chaser.domElement.style.left)
-    var chaserTop = parseInt(chaser.domElement.style.top)
-    if (targetLeft <= chaserLeft) {
+    var targetLeft = parseInt(target.domElement.style.left);
+    var targetWidth = target.domElement.clientWidth;
+    var targetTop = parseInt(target.domElement.style.top);
+    var targetHeight = target.domElement.clientHeight;
+    var chaserLeft = parseInt(chaser.domElement.style.left);
+    var chaserWidth = chaser.domElement.clientWidth;
+    var chaserTop = parseInt(chaser.domElement.style.top);
+    var chaserHeight = chaser.domElement.clientHeight;
+    if (targetLeft + targetWidth/4 < chaserLeft) {
         moveLeft(chaser);
         chaser.movementFlags.leftMovement = true;   //SHould call a class function to change internally
     }
-    else chaser.movementFlags.leftMovement = false;
-    if (targetLeft >= chaserLeft) {
+    else chaser.movementFlags.leftMovement = false; //Needs work
+    if (targetLeft >= chaserLeft+chaserWidth/2) {
         moveRight(chaser);
         chaser.movementFlags.rightMovement = true;
     }
     else chaser.movementFlags.rightMovement = false;
-    if (targetTop <= chaserTop) {
+    if (targetTop + targetHeight/4 < chaserTop) {
         moveUp(chaser);
         chaser.movementFlags.upMovement = true;
     }
     else chaser.movementFlags.upMovement = false;
-    if (targetTop >= chaserTop) {
+    if (targetTop >= chaserTop+chaserHeight) {
         moveDown(chaser);
         chaser.movementFlags.downMovement = true;
     }
