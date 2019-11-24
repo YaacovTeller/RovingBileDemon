@@ -21,6 +21,7 @@ abstract class movingSprite extends sprite {
     constructor() {
         super();
     }
+    
     abstract startNoise();
     abstract stopNoise();
     abstract startMoving();
@@ -43,6 +44,7 @@ class Bile extends movingSprite {
     public domElement: HTMLElement;
     public height: number = this.domElement.clientHeight;
     public heightAdjust = 5;
+    public widthAdjust = 1;
     public chickensEaten: number = 0;
     public eatChick() {
         finishEatingSetPic(this);
@@ -76,7 +78,7 @@ class Bile extends movingSprite {
         else if (num == 4) { Fart4.play() }
         else if (num == 5) { Fart5.play() }
         else if (num == 6) { Fart6.play() }
-        if(collisionCheck(biledemon, victim)){
+        if (collisionCheck(biledemon, victim)) {
             thiefInst.stun(num);
         }
     }
@@ -95,6 +97,7 @@ class Thief extends movingSprite {
     public domElement: HTMLElement;
     public height: number = 73;
     public heightAdjust = 5;
+    public widthAdjust = 2;
     public stunFlag: boolean;
     public chickensEaten: number = 0;
     constructor() {
@@ -176,7 +179,7 @@ class chicken extends sprite {
         this.domElement.parentNode.removeChild(this.domElement);
         clearInterval(this.myCluck);
         eater.chickensEaten += 1;
-      // chicken.chickCount++;
+        // chicken.chickCount++;
         refreshChickCounter();
     }
 }

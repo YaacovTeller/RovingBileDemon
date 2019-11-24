@@ -39,6 +39,7 @@ var Bile = /** @class */ (function (_super) {
         _this.speed = 15;
         _this.height = _this.domElement.clientHeight;
         _this.heightAdjust = 5;
+        _this.widthAdjust = 1;
         _this.chickensEaten = 0;
         _this.movementFlags.oldFlag = _this.movementFlags.movingFlag = 'S';
         _this.movementFlags.eatFlag = false;
@@ -107,6 +108,7 @@ var Thief = /** @class */ (function (_super) {
         _this.movementFlags = new MovementFlags();
         _this.height = 73;
         _this.heightAdjust = 5;
+        _this.widthAdjust = 2;
         _this.chickensEaten = 0;
         _this.movementFlags.oldFlag = 'S';
         _this.stunFlag = false;

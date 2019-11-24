@@ -1,31 +1,16 @@
 var modal = document.getElementById("bileModal");
 var playerScore = document.getElementById("playerScore");
 var enemyScore = document.getElementById("enemyScore");
-var keyMoved_object;
-// var keyMoved_element: HTMLElement;
 var newChickBox = document.getElementById("newChickBox");
 var newThiefBox = document.getElementById("newThiefBox");
 var biledemon;
 var chickenInst;
 var thiefInst;
 var chaseFlag = true;
-// window.onload = function GameStart() {
-//     biledemon = new bile;
-//     setTimeout(function () { BileReady.play() }, 1000);
-//     pic = bileD;
-//     step = biledemon.speed;
-//     options.resetSpeed();
-//     chickenInst = new chicken;
-//     chickenInst.draw();
-//     chickenInst.cluck();
-//     setInterval(update, 50);
-// }
 function begin() {
-    biledemon = new Bile;
-    keyMoved_object = biledemon;
-    //   keyMoved_element = biledemon.domElement;
-    chickenInst = new chicken;
-    thiefInst = new Thief;
+    biledemon = new Bile();
+    chickenInst = new chicken();
+    thiefInst = new Thief();
     setInterval(update, 50);
     modal.style.display = "none";
 }
@@ -42,7 +27,6 @@ function update() {
     }
 }
 function chase(chaser, target) {
-    //chaser.startNoise(); //// BAD PRACTICE?? ONLY BY MOVEMENT?
     if (chaser.stunFlag) {
         chaser.stopNoise();
         return;
@@ -50,38 +34,62 @@ function chase(chaser, target) {
     ;
     setMovingFlag(chaser);
     setPicAndSound(chaser);
-    var targetLeft = parseInt(target.domElement.style.left);
-    var targetWidth = target.domElement.clientWidth;
-    var targetTop = parseInt(target.domElement.style.top);
-    var targetHeight = target.domElement.clientHeight;
-    var chaserLeft = parseInt(chaser.domElement.style.left);
-    var chaserWidth = chaser.domElement.clientWidth;
-    var chaserTop = parseInt(chaser.domElement.style.top);
-    var chaserHeight = chaser.domElement.clientHeight;
-    if (targetLeft + targetWidth / 4 < chaserLeft) {
+    clearMovingFlags(chaser);
+    var collisionCheckFlag = true;
+    if (!colCheckLeft(chaser, target)) {
         moveLeft(chaser);
-        chaser.movementFlags.leftMovement = true; //SHould call a class function to change internally
+        collisionCheckFlag = false;
     }
-    else
-        chaser.movementFlags.leftMovement = false; //Needs work
-    if (targetLeft >= chaserLeft + chaserWidth / 2) {
+    if (!colCheckRight(chaser, target)) {
         moveRight(chaser);
-        chaser.movementFlags.rightMovement = true;
+        collisionCheckFlag = false;
     }
-    else
-        chaser.movementFlags.rightMovement = false;
-    if (targetTop + targetHeight / 4 < chaserTop) {
+    if (!colCheckUp(chaser, target)) {
         moveUp(chaser);
-        chaser.movementFlags.upMovement = true;
+        collisionCheckFlag = false;
     }
-    else
-        chaser.movementFlags.upMovement = false;
-    if (targetTop >= chaserTop + chaserHeight) {
+    if (!colCheckDown(chaser, target)) {
         moveDown(chaser);
-        chaser.movementFlags.downMovement = true;
+        collisionCheckFlag = false;
+    }
+    if (collisionCheckFlag == true) {
+    }
+}
+function colCheckLeft(chaser, target) {
+    if (domElementInfo(chaser, 'left') > domElementInfo(target, 'left') + domElementPos(target, 'width') / 2) {
+        return false;
     }
     else
-        chaser.movementFlags.downMovement = false;
+        return true;
+}
+function colCheckRight(chaser, target) {
+    var widthAdjust = chaser.widthAdjust;
+    if (domElementInfo(chaser, 'left') + domElementPos(chaser, 'width') / widthAdjust <= domElementInfo(target, 'left') + domElementPos(target, 'width')) {
+        return false;
+    }
+    else
+        return true;
+}
+function colCheckUp(chaser, target) {
+    var heightAdjust = chaser.heightAdjust;
+    if (domElementInfo(chaser, 'top') + (domElementPos(chaser, 'height') / heightAdjust) > domElementInfo(target, 'top') + domElementPos(target, 'height') / 5) {
+        return false;
+    }
+    else
+        return true;
+}
+function colCheckDown(chaser, target) {
+    if (domElementInfo(chaser, 'top') + domElementPos(chaser, 'height') < domElementInfo(target, 'top') + domElementPos(target, 'height') / 2) {
+        return false;
+    }
+    else
+        return true;
+}
+function clearMovingFlags(object) {
+    object.movementFlags.downMovement = false;
+    object.movementFlags.upMovement = false;
+    object.movementFlags.leftMovement = false;
+    object.movementFlags.rightMovement = false;
 }
 function stepSounds() {
     var num = Math.floor(Math.random() * (4) + 1);
@@ -107,16 +115,30 @@ function getRandomScreenPosition() {
     randomPosition.randomTop = 80 + Math.round(Math.random() * (screen.height - 200));
     return randomPosition;
 }
+function domElementInfo(obj, request) {
+    return getStyleVal(obj.domElement, request);
+}
+function domElementPos(obj, request) {
+    var info;
+    if (request == 'height') {
+        info = obj.domElement.clientHeight;
+    }
+    else if (request == 'width') {
+        info = obj.domElement.clientWidth;
+    }
+    return info;
+}
 function collisionCheck(objectInst, target) {
-    var heightAdjust = objectInst.heightAdjust;
-    // move down
-    if (parseInt(objectInst.domElement.style.top) + objectInst.domElement.clientHeight >= parseInt(target.domElement.style.top)
-        //  move right
-        && parseInt(objectInst.domElement.style.left) + objectInst.domElement.clientWidth >= parseInt(target.domElement.style.left)
-        //  move up
-        && parseInt(objectInst.domElement.style.top) + (objectInst.domElement.clientHeight / heightAdjust) <= parseInt(target.domElement.style.top) + target.domElement.clientHeight
-        //  move left
-        && parseInt(objectInst.domElement.style.left) <= parseInt(target.domElement.style.left) + target.domElement.clientWidth) {
+    //   var heightAdjust: number = objectInst.heightAdjust;
+    if (colCheckLeft(objectInst, target) && colCheckRight(objectInst, target) && colCheckUp(objectInst, target) && colCheckDown(objectInst, target)
+    // if (domElementInfo(objectInst,'top') + domElementPos(objectInst, 'height') >= domElementInfo(target, 'top')
+    // //  move right
+    // && domElementInfo(objectInst, 'left') + domElementPos(objectInst, 'width') >= domElementInfo(target, 'left')
+    // //  move up
+    // && domElementInfo(objectInst, 'top') + (domElementPos(objectInst, 'height') / heightAdjust) <= domElementInfo(target, 'top') + domElementPos(target, 'height')
+    // //  move left
+    // && domElementInfo(objectInst, 'left') <= domElementInfo(target,'left') + domElementPos(target, 'width')
+    ) {
         if (target.constructor.name == 'chicken') {
             chickenCollisionFunction(objectInst, false); //only true for 'cheat'!
         }
@@ -168,24 +190,28 @@ function moveLeft(object) {
     oldVal = getStyleVal(object.domElement, options.left);
     if (oldVal > 40 - object.domElement.width / 3) {
         Move(object.domElement, options.left, -object.speed);
+        object.movementFlags.leftMovement = true;
     }
 }
 function moveRight(object) {
     oldVal = getStyleVal(object.domElement, options.left);
     if (oldVal < screen.width - object.domElement.width) { //-200
         Move(object.domElement, options.left, object.speed);
+        object.movementFlags.rightMovement = true;
     }
 }
 function moveUp(object) {
     oldVal = getStyleVal(object.domElement, options.top);
     if (oldVal > 5000 / object.domElement.height) {
         Move(object.domElement, options.top, -object.speed);
+        object.movementFlags.upMovement = true;
     }
 }
 function moveDown(object) {
     oldVal = getStyleVal(object.domElement, options.top);
     if (oldVal + object.domElement.height < screen.height - 100) {
         Move(object.domElement, options.top, object.speed);
+        object.movementFlags.downMovement = true;
     }
 }
 function Move(elem, prop, step) {
