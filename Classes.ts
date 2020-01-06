@@ -17,6 +17,7 @@ class MovementFlags {
 
 abstract class movingSprite extends sprite {
     public movementFlags = new MovementFlags();
+    public fightFlag: boolean;
 
     constructor() {
         super();
@@ -46,6 +47,8 @@ class Bile extends movingSprite {
     public heightAdjust = 5;
     public widthAdjust = 1;
     public chickensEaten: number = 0;
+    public stunFlag: boolean;//?
+
     public eatChick() {
         finishEatingSetPic(this);
         this.height += 10;
@@ -61,6 +64,12 @@ class Bile extends movingSprite {
         this.stopNoise();
         this.domElement.setAttribute("src", `Bile gifs/frames/Bile_${this.movementFlags.oldFlag} frame.gif`)
     };
+    public startFighting(){
+        Swipe1.play()
+    }
+    public stopFighting(){
+        
+    }
     public AnnounceArrival() {
         BileReady.play();
     }
@@ -71,15 +80,22 @@ class Bile extends movingSprite {
         BileMove1.stop();
     }
     public passWind(victim) {
-        let num: number = Math.floor(Math.random() * (6) + 1);
-        if (num == 1) { Fart1.play() }
-        else if (num == 2) { Fart2.play() }
-        else if (num == 3) { Fart3.play() }
-        else if (num == 4) { Fart4.play() }
-        else if (num == 5) { Fart5.play() }
-        else if (num == 6) { Fart6.play() }
+        let num = multiSoundSelector(windArray);
+        // let num: number = Math.floor(Math.random() * (6) + 1);
+        // if (num == 1) { Fart1.play() }
+        // else if (num == 2) { Fart2.play() }
+        // else if (num == 3) { Fart3.play() }
+        // else if (num == 4) { Fart4.play() }
+        // else if (num == 5) { Fart5.play() }
+        // else if (num == 6) { Fart6.play() }
         if (collisionCheck(biledemon, victim)) {
             thiefInst.stun(num);
+        }
+    }
+    public fight(victim){
+
+        if (collisionCheck(biledemon, victim)) {
+            
         }
     }
 }
@@ -140,7 +156,7 @@ class Thief extends movingSprite {
         this.domElement.setAttribute("src", `Thief gifs/thief_${this.movementFlags.oldFlag}.gif`) /////// CHANGE TO FRAME
     }
     public startNoise() {
-        this.mySteps = setInterval(stepSounds, 500);
+        this.mySteps = setInterval(()=>multiSoundSelector(walkArray), 500);
     }
     public stopNoise() {
         clearInterval(this.mySteps);
@@ -163,13 +179,14 @@ class chicken extends sprite {
         this.cluck();
     }
     public chickSounds() {
-        let num: number = Math.floor(Math.random() * (6) + 1);
-        if (num == 1) { Chick1.play() }
-        else if (num == 2) { Chick2.play() }
-        else if (num == 3) { Chick3.play() }
-        else if (num == 4) { Chick4.play() }
-        else if (num == 5) { Chick5.play() }
-        else if (num == 6) { Chick6.play() }
+        multiSoundSelector(chickArray);
+        // let num: number = Math.floor(Math.random() * (6) + 1);
+        // if (num == 1) { Chick1.play() }
+        // else if (num == 2) { Chick2.play() }
+        // else if (num == 3) { Chick3.play() }
+        // else if (num == 4) { Chick4.play() }
+        // else if (num == 5) { Chick5.play() }
+        // else if (num == 6) { Chick6.play() }
     }
     public cluck() {
         this.myCluck = setInterval(this.chickSounds, 3000);

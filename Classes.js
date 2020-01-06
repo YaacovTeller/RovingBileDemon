@@ -65,6 +65,11 @@ var Bile = /** @class */ (function (_super) {
         this.domElement.setAttribute("src", "Bile gifs/frames/Bile_" + this.movementFlags.oldFlag + " frame.gif");
     };
     ;
+    Bile.prototype.startFighting = function () {
+        Swipe1.play();
+    };
+    Bile.prototype.stopFighting = function () {
+    };
     Bile.prototype.AnnounceArrival = function () {
         BileReady.play();
     };
@@ -75,27 +80,20 @@ var Bile = /** @class */ (function (_super) {
         BileMove1.stop();
     };
     Bile.prototype.passWind = function (victim) {
-        var num = Math.floor(Math.random() * (6) + 1);
-        if (num == 1) {
-            Fart1.play();
-        }
-        else if (num == 2) {
-            Fart2.play();
-        }
-        else if (num == 3) {
-            Fart3.play();
-        }
-        else if (num == 4) {
-            Fart4.play();
-        }
-        else if (num == 5) {
-            Fart5.play();
-        }
-        else if (num == 6) {
-            Fart6.play();
-        }
+        var num = multiSoundSelector(windArray);
+        // let num: number = Math.floor(Math.random() * (6) + 1);
+        // if (num == 1) { Fart1.play() }
+        // else if (num == 2) { Fart2.play() }
+        // else if (num == 3) { Fart3.play() }
+        // else if (num == 4) { Fart4.play() }
+        // else if (num == 5) { Fart5.play() }
+        // else if (num == 6) { Fart6.play() }
         if (collisionCheck(biledemon, victim)) {
             thiefInst.stun(num);
+        }
+    };
+    Bile.prototype.fight = function (victim) {
+        if (collisionCheck(biledemon, victim)) {
         }
     };
     return Bile;
@@ -148,7 +146,7 @@ var Thief = /** @class */ (function (_super) {
         this.domElement.setAttribute("src", "Thief gifs/thief_" + this.movementFlags.oldFlag + ".gif"); /////// CHANGE TO FRAME
     };
     Thief.prototype.startNoise = function () {
-        this.mySteps = setInterval(stepSounds, 500);
+        this.mySteps = setInterval(function () { return multiSoundSelector(walkArray); }, 500);
     };
     Thief.prototype.stopNoise = function () {
         clearInterval(this.mySteps);
@@ -174,25 +172,14 @@ var chicken = /** @class */ (function (_super) {
         this.cluck();
     };
     chicken.prototype.chickSounds = function () {
-        var num = Math.floor(Math.random() * (6) + 1);
-        if (num == 1) {
-            Chick1.play();
-        }
-        else if (num == 2) {
-            Chick2.play();
-        }
-        else if (num == 3) {
-            Chick3.play();
-        }
-        else if (num == 4) {
-            Chick4.play();
-        }
-        else if (num == 5) {
-            Chick5.play();
-        }
-        else if (num == 6) {
-            Chick6.play();
-        }
+        multiSoundSelector(chickArray);
+        // let num: number = Math.floor(Math.random() * (6) + 1);
+        // if (num == 1) { Chick1.play() }
+        // else if (num == 2) { Chick2.play() }
+        // else if (num == 3) { Chick3.play() }
+        // else if (num == 4) { Chick4.play() }
+        // else if (num == 5) { Chick5.play() }
+        // else if (num == 6) { Chick6.play() }
     };
     chicken.prototype.cluck = function () {
         this.myCluck = setInterval(this.chickSounds, 3000);
