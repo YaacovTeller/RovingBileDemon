@@ -6,31 +6,42 @@ var newThiefBox: HTMLElement = document.getElementById("newThiefBox");
 var biledemon: Bile;
 var chickenInst: chicken;
 var thiefInst: Thief;
-var chaseFlag: boolean = true;
 var enemyArray: Array<movingSprite> = [];
 
 function begin() {
     biledemon = new Bile();
     chickenInst = new chicken();
-    thiefInst = new Thief();
-    enemyArray.push(thiefInst);
+    spawnEnemy(Thief);
     setInterval(update, 50);
     modal.style.display = "none";
+}
+function spawnEnemy(enemyClass) {
+    thiefInst = new enemyClass();
+    enemyArray.push(thiefInst);
 }
 function update() {
     KeysMoveCheck(biledemon); //handles actual movement
     setMovingFlag(biledemon); //ascertains compass direction
     setPicAndSound(biledemon); //handles gif direction
-    collisionCheck(biledemon, chickenInst); //checks for chicken collision
-    // setMovingFlag(thiefInst);
-    // setPicAndSound(thiefInst);
-    if (chaseFlag) {
-        chase(thiefInst, chickenInst);
-        collisionCheck(thiefInst, chickenInst);
+    if (collisionCheck(biledemon, chickenInst)) {
+        chickenCollisionFunction(biledemon, false); //only true for 'cheat'!
+    };
+    for (let i = 0; i < enemyArray.length; i++) {
+        enemyArray[i].considerIntent();
+        if (enemyArray[i].intent == 'pursue') {
+            chase(enemyArray[i], biledemon);
+            collisionCheck(enemyArray[i], biledemon);
+        }
+        else if (enemyArray[i].intent == 'eat') {
+            chase(enemyArray[i], chickenInst);
+            if (collisionCheck(enemyArray[i], chickenInst)) {
+                chickenCollisionFunction(enemyArray[i], false);
+            };
+        }
     }
 }
-function chase(chaser: Thief, target: chicken) {  //Combine CHASE with COLLISION CHECK
-    if (chaser.stunFlag){
+function chase(chaser: movingSprite, target: chicken | movingSprite) {  //Combine CHASE with COLLISION CHECK
+    if (chaser.stunFlag) {
         chaser.stopNoise();
         return
     };
@@ -54,8 +65,8 @@ function chase(chaser: Thief, target: chicken) {  //Combine CHASE with COLLISION
         moveDown(chaser);
         collisionCheckFlag = false;
     }
-    if (collisionCheckFlag == true){
-        
+    if (collisionCheckFlag == true) {
+
     }
 }
 
@@ -76,16 +87,14 @@ function chickenCollisionFunction(objectInst, cheat) {
             objectInst.eatChick();
             chickenInst.perish(objectInst);
             chickenInst = new chicken();
-     //       chaseFlag = true;
         }
     }
     else if (myClass == 'Thief') {
-        if (  objectInst.stunFlag == false){
-        objectInst.eatChick();
-        chickenInst.perish(objectInst);
-        chickenInst = new chicken();
- //       chaseFlag = false;
-     //   objectInst.stopMoving();
+        if (objectInst.stunFlag == false) {
+            objectInst.eatChick();
+            chickenInst.perish(objectInst);
+            chickenInst = new chicken();
+            //   objectInst.stopMoving();
         }
     }
 }
@@ -100,7 +109,7 @@ function getStyleVal(elem, prop) {
     return parseInt(elem.style[prop]);
 }
 
-function setPicAndSound(objectInst: Bile | Thief) {
+function setPicAndSound(objectInst: Bile | Thief | movingSprite) {
     var movementFlags = objectInst.movementFlags;
     if (movementFlags.eatFlag == true) { return };
     if (movementFlags.oldFlag != movementFlags.movingFlag) {
@@ -111,15 +120,15 @@ function setPicAndSound(objectInst: Bile | Thief) {
     }
 }
 
-function actionTimeout(objectInst, action){
+function actionTimeout(objectInst, action) {
     var myClass = objectInst.constructor.name;
     var movementFlags = objectInst.movementFlags;
     let direction = action == "eat" ? "" : movementFlags.facing;
     objectInst.domElement.setAttribute("src", `${myClass} gifs/${myClass}_${action}_${direction}.gif`);
 
-    movementFlags.eatFlag = true 
+    movementFlags.eatFlag = true
     setTimeout(() => {
-         movementFlags.eatFlag = false 
+        movementFlags.eatFlag = false
         if (movementFlags.movingFlag == "") {
             objectInst.stopMoving()
             objectInst.domElement.setAttribute("src", `${myClass} gifs/frames/${myClass}_${movementFlags.facing} frame.gif`);
@@ -132,13 +141,13 @@ function actionTimeout(objectInst, action){
 function eatTimeout(objectInst) {
     actionTimeout(objectInst, "eat")
 }
-function fightTimeout(objectInst){
+function fightTimeout(objectInst) {
     actionTimeout(objectInst, "fight");
 }
 
 function shaiCheatPlusTen() {
     biledemon.chickensEaten += 10;
-   // chicken.chickCount += 10;
+    // chicken.chickCount += 10;
 }
 function refreshChickCounter() {
     playerScore.innerHTML = "" + biledemon.chickensEaten;//chicken.chickCount;

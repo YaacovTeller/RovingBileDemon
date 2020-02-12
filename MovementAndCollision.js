@@ -145,10 +145,8 @@ function colCheckDown(chaser, target) {
         return true;
 }
 function collisionCheck(objectInst, target) {
-    if (colCheckLeft(objectInst, target) && colCheckRight(objectInst, target) && colCheckUp(objectInst, target) && colCheckDown(objectInst, target)) {
-        if (target.constructor.name == 'chicken') {
-            chickenCollisionFunction(objectInst, false); //only true for 'cheat'!
-        }
+    if (colCheckLeft(objectInst, target) && colCheckRight(objectInst, target) &&
+        colCheckUp(objectInst, target) && colCheckDown(objectInst, target)) {
         return true;
     }
 }

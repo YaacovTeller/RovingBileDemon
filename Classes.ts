@@ -21,11 +21,14 @@ abstract class movingSprite extends sprite {
     public fightFlag: boolean;
     public health: number;
     public power: number;
+    public intent: string;
+    public stunFlag: boolean;
 
     constructor() {
         super();
     }
     
+    abstract considerIntent();
     abstract startNoise();
     abstract stopNoise();
     abstract startMoving();
@@ -98,6 +101,7 @@ class Bile extends movingSprite {
             }
         }
     }
+    public considerIntent(){}
     public stun(num){}
     public hit(num){}
 }
@@ -117,18 +121,24 @@ class Thief extends movingSprite {
     public heightAdjust = 5;
     public widthAdjust = 2;
     public stunFlag: boolean;
+    public intent: string;
     public chickensEaten: number = 0;
     constructor() {
         super()
         this.movementFlags.oldFlag = 'S';
         this.stunFlag = false;
         this.health = 100;
+        this.intent = "pursue";
     }
     public draw() {
         var newThief = `<img id="thief${Thief.thiefCount}" src="Thief gifs/thief_W.gif" style="position:absolute; top:${Thief.thiefStartPosition.top}px; left:${Thief.thiefStartPosition.left}px" />`;
         newThiefBox.innerHTML += newThief;
         this.domElement = document.getElementById(`thief${Thief.thiefCount}`);
         //    this.height = this.domElement.clientHeight;
+    }
+    public considerIntent(){
+        if (this.health<=0){this.intent = null}
+        else {this.intent = this.health<50 ? "eat" : "pursue";}
     }
     public eatChick() {
         eatTimeout(this);
@@ -163,6 +173,8 @@ class Thief extends movingSprite {
     public death(){
         this.domElement.setAttribute("src", `Thief gifs/thief_collapse.gif`);
         this.stunFlag = true;
+        this.domElement = null;
+        this.intent = null;
     }
 
     public startMoving() {

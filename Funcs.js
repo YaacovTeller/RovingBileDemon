@@ -6,26 +6,39 @@ var newThiefBox = document.getElementById("newThiefBox");
 var biledemon;
 var chickenInst;
 var thiefInst;
-var chaseFlag = true;
 var enemyArray = [];
 function begin() {
     biledemon = new Bile();
     chickenInst = new chicken();
-    thiefInst = new Thief();
-    enemyArray.push(thiefInst);
+    spawnEnemy(Thief);
     setInterval(update, 50);
     modal.style.display = "none";
+}
+function spawnEnemy(enemyClass) {
+    thiefInst = new enemyClass();
+    enemyArray.push(thiefInst);
 }
 function update() {
     KeysMoveCheck(biledemon); //handles actual movement
     setMovingFlag(biledemon); //ascertains compass direction
     setPicAndSound(biledemon); //handles gif direction
-    collisionCheck(biledemon, chickenInst); //checks for chicken collision
-    // setMovingFlag(thiefInst);
-    // setPicAndSound(thiefInst);
-    if (chaseFlag) {
-        chase(thiefInst, chickenInst);
-        collisionCheck(thiefInst, chickenInst);
+    if (collisionCheck(biledemon, chickenInst)) {
+        chickenCollisionFunction(biledemon, false); //only true for 'cheat'!
+    }
+    ;
+    for (var i = 0; i < enemyArray.length; i++) {
+        enemyArray[i].considerIntent();
+        if (enemyArray[i].intent == 'pursue') {
+            chase(enemyArray[i], biledemon);
+            collisionCheck(enemyArray[i], biledemon);
+        }
+        else if (enemyArray[i].intent == 'eat') {
+            chase(enemyArray[i], chickenInst);
+            if (collisionCheck(enemyArray[i], chickenInst)) {
+                chickenCollisionFunction(enemyArray[i], false);
+            }
+            ;
+        }
     }
 }
 function chase(chaser, target) {
@@ -73,7 +86,6 @@ function chickenCollisionFunction(objectInst, cheat) {
             objectInst.eatChick();
             chickenInst.perish(objectInst);
             chickenInst = new chicken();
-            //       chaseFlag = true;
         }
     }
     else if (myClass == 'Thief') {
@@ -81,7 +93,6 @@ function chickenCollisionFunction(objectInst, cheat) {
             objectInst.eatChick();
             chickenInst.perish(objectInst);
             chickenInst = new chicken();
-            //       chaseFlag = false;
             //   objectInst.stopMoving();
         }
     }

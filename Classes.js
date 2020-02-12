@@ -94,6 +94,7 @@ var Bile = /** @class */ (function (_super) {
             }
         }
     };
+    Bile.prototype.considerIntent = function () { };
     Bile.prototype.stun = function (num) { };
     Bile.prototype.hit = function (num) { };
     return Bile;
@@ -111,6 +112,7 @@ var Thief = /** @class */ (function (_super) {
         _this.movementFlags.oldFlag = 'S';
         _this.stunFlag = false;
         _this.health = 100;
+        _this.intent = "pursue";
         return _this;
     }
     Thief.prototype.draw = function () {
@@ -118,6 +120,14 @@ var Thief = /** @class */ (function (_super) {
         newThiefBox.innerHTML += newThief;
         this.domElement = document.getElementById("thief" + Thief.thiefCount);
         //    this.height = this.domElement.clientHeight;
+    };
+    Thief.prototype.considerIntent = function () {
+        if (this.health <= 0) {
+            this.intent = null;
+        }
+        else {
+            this.intent = this.health < 50 ? "eat" : "pursue";
+        }
     };
     Thief.prototype.eatChick = function () {
         eatTimeout(this);
@@ -152,6 +162,8 @@ var Thief = /** @class */ (function (_super) {
     Thief.prototype.death = function () {
         this.domElement.setAttribute("src", "Thief gifs/thief_collapse.gif");
         this.stunFlag = true;
+        this.domElement = null;
+        this.intent = null;
     };
     Thief.prototype.startMoving = function () {
         if (!this.mySteps || this.mySteps == 0) {
