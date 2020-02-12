@@ -12,12 +12,15 @@ class MovementFlags {
     public rightMovement: boolean;
     public movingFlag: string;
     public oldFlag: string;
+    public facing: string;
     public eatFlag: boolean;
 }
 
 abstract class movingSprite extends sprite {
     public movementFlags = new MovementFlags();
     public fightFlag: boolean;
+    public health: number;
+    public power: number;
 
     constructor() {
         super();
@@ -27,6 +30,8 @@ abstract class movingSprite extends sprite {
     abstract stopNoise();
     abstract startMoving();
     abstract stopMoving();
+    abstract stun(severity);
+    abstract hit(severity);
 }
 
 class Bile extends movingSprite {
@@ -34,6 +39,8 @@ class Bile extends movingSprite {
         super()
         this.movementFlags.oldFlag = this.movementFlags.movingFlag = 'S';
         this.movementFlags.eatFlag = false;
+        this.health = 100;
+        this.power = 30;
     }
     public draw() {
         this.domElement = document.getElementById("bileD");
@@ -50,7 +57,7 @@ class Bile extends movingSprite {
     public stunFlag: boolean;//?
 
     public eatChick() {
-        finishEatingSetPic(this);
+        eatTimeout(this);
         this.height += 10;
         this.domElement.style.height = `${this.height}px`;
         this.speed += 1.2;
@@ -64,12 +71,6 @@ class Bile extends movingSprite {
         this.stopNoise();
         this.domElement.setAttribute("src", `Bile gifs/frames/Bile_${this.movementFlags.oldFlag} frame.gif`)
     };
-    public startFighting(){
-        Swipe1.play()
-    }
-    public stopFighting(){
-        
-    }
     public AnnounceArrival() {
         BileReady.play();
     }
@@ -79,25 +80,26 @@ class Bile extends movingSprite {
     public stopNoise() {
         BileMove1.stop();
     }
-    public passWind(victim) {
+    public passWind() {
         let num = multiSoundSelector(windArray);
-        // let num: number = Math.floor(Math.random() * (6) + 1);
-        // if (num == 1) { Fart1.play() }
-        // else if (num == 2) { Fart2.play() }
-        // else if (num == 3) { Fart3.play() }
-        // else if (num == 4) { Fart4.play() }
-        // else if (num == 5) { Fart5.play() }
-        // else if (num == 6) { Fart6.play() }
-        if (collisionCheck(biledemon, victim)) {
-            thiefInst.stun(num);
+        for (let i = 0; i<enemyArray.length; i++){
+            if (collisionCheck(biledemon, enemyArray[i])) {
+                enemyArray[i].stun(num);
+            }
         }
     }
-    public fight(victim){
-
-        if (collisionCheck(biledemon, victim)) {
-            
+    public fight(){
+        Swipe1.play();
+        fightTimeout(this);
+        let num = this.power;
+        for (let i = 0; i<enemyArray.length; i++){
+            if (collisionCheck(biledemon, enemyArray[i])) {
+                enemyArray[i].hit(num);
+            }
         }
     }
+    public stun(num){}
+    public hit(num){}
 }
 
 class Thief extends movingSprite {
@@ -120,6 +122,7 @@ class Thief extends movingSprite {
         super()
         this.movementFlags.oldFlag = 'S';
         this.stunFlag = false;
+        this.health = 100;
     }
     public draw() {
         var newThief = `<img id="thief${Thief.thiefCount}" src="Thief gifs/thief_W.gif" style="position:absolute; top:${Thief.thiefStartPosition.top}px; left:${Thief.thiefStartPosition.left}px" />`;
@@ -128,10 +131,12 @@ class Thief extends movingSprite {
         //    this.height = this.domElement.clientHeight;
     }
     public eatChick() {
-        finishEatingSetPic(this);
+        eatTimeout(this);
         this.height += 8;
         this.domElement.style.height = `${this.height}px`;
         this.speed += 0.5;
+        this.health = this.health < 100? this.health+=10 : this.health;
+        this.updateHealthBar();
     }
     public stun(severity) {
         var timeout = severity * 1000;
@@ -142,6 +147,22 @@ class Thief extends movingSprite {
         setTimeout(function () {
             this_.stunFlag = false;
         }, timeout);
+    }
+    public hit(severity) { 
+        Hit.play();
+        this.health -= severity;
+        this.health = this.health>0?this.health:0;
+        this.updateHealthBar();
+        if (this.health <= 0){
+            this.death();
+        }
+    }
+    public updateHealthBar(){
+        document.getElementById("enemyHealth").style.width = this.health *2 + "px";
+    }
+    public death(){
+        this.domElement.setAttribute("src", `Thief gifs/thief_collapse.gif`);
+        this.stunFlag = true;
     }
 
     public startMoving() {
@@ -180,13 +201,6 @@ class chicken extends sprite {
     }
     public chickSounds() {
         multiSoundSelector(chickArray);
-        // let num: number = Math.floor(Math.random() * (6) + 1);
-        // if (num == 1) { Chick1.play() }
-        // else if (num == 2) { Chick2.play() }
-        // else if (num == 3) { Chick3.play() }
-        // else if (num == 4) { Chick4.play() }
-        // else if (num == 5) { Chick5.play() }
-        // else if (num == 6) { Chick6.play() }
     }
     public cluck() {
         this.myCluck = setInterval(this.chickSounds, 3000);

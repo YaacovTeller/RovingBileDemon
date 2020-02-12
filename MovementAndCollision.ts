@@ -46,6 +46,7 @@ function Move(elem, prop, step) {
 
 function setMovingFlag(objectInst: movingSprite) {
     objectInst.movementFlags.oldFlag = objectInst.movementFlags.movingFlag;
+    var oldFlag = objectInst.movementFlags.oldFlag;
     var movingFlag = objectInst.movementFlags.movingFlag = "";
     var leftMovement = objectInst.movementFlags.leftMovement;
     var upMovement = objectInst.movementFlags.upMovement;
@@ -73,6 +74,7 @@ function setMovingFlag(objectInst: movingSprite) {
         else movingFlag = "S"
     }
     objectInst.movementFlags.movingFlag = movingFlag;
+    objectInst.movementFlags.facing = oldFlag != "" ? oldFlag : objectInst.movementFlags.facing
     return movingFlag;
 }
 

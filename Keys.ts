@@ -9,8 +9,11 @@ window.addEventListener('keyup', function (e) {
 })
 
 function keyCommands(e: KeyboardEvent) {
+    if (keys[50]) {
+        biledemon.fight();
+    }
     if (e.keyCode == 49) {  // e.key === "1"
-        biledemon.passWind(thiefInst);
+        biledemon.passWind();
     }
     else if (e.key === "o") {
         shaiCheatPlusTen();

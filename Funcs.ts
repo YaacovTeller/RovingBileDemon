@@ -7,20 +7,21 @@ var biledemon: Bile;
 var chickenInst: chicken;
 var thiefInst: Thief;
 var chaseFlag: boolean = true;
+var enemyArray: Array<movingSprite> = [];
 
 function begin() {
     biledemon = new Bile();
     chickenInst = new chicken();
     thiefInst = new Thief();
+    enemyArray.push(thiefInst);
     setInterval(update, 50);
     modal.style.display = "none";
 }
 function update() {
-    KeysMoveCheck(biledemon);
-    setMovingFlag(biledemon);
-    setPicAndSound(biledemon);
-    collisionCheck(biledemon, chickenInst);
-    fightCheck(biledemon);
+    KeysMoveCheck(biledemon); //handles actual movement
+    setMovingFlag(biledemon); //ascertains compass direction
+    setPicAndSound(biledemon); //handles gif direction
+    collisionCheck(biledemon, chickenInst); //checks for chicken collision
     // setMovingFlag(thiefInst);
     // setPicAndSound(thiefInst);
     if (chaseFlag) {
@@ -68,8 +69,6 @@ function getRandomScreenPosition() {
     return randomPosition
 }
 
-
-
 function chickenCollisionFunction(objectInst, cheat) {
     var myClass = objectInst.constructor.name;
     if (myClass == 'Bile') {
@@ -112,34 +111,29 @@ function setPicAndSound(objectInst: Bile | Thief) {
     }
 }
 
-function finishEatingSetPic(objectInst) {
+function actionTimeout(objectInst, action){
     var myClass = objectInst.constructor.name;
     var movementFlags = objectInst.movementFlags;
-    objectInst.domElement.setAttribute("src", `${myClass} gifs/${myClass}_eat.gif`);
+    let direction = action == "eat" ? "" : movementFlags.facing;
+    objectInst.domElement.setAttribute("src", `${myClass} gifs/${myClass}_${action}_${direction}.gif`);
 
-    movementFlags.eatFlag = true;
-    setTimeout(function () {
-        movementFlags.eatFlag = false
+    movementFlags.eatFlag = true 
+    setTimeout(() => {
+         movementFlags.eatFlag = false 
         if (movementFlags.movingFlag == "") {
             objectInst.stopMoving()
-            objectInst.domElement.setAttribute("src", `${myClass} gifs/frames/${myClass}_SE frame.gif`);
+            objectInst.domElement.setAttribute("src", `${myClass} gifs/frames/${myClass}_${movementFlags.facing} frame.gif`);
         }
         else {
             objectInst.startMoving();//Attempt to change from eating pic. Bad idea
         }
     }, 1200);
 }
-function fightCheck(objectInst) {
-    if (keys[50]) {
-        fightSetPic(objectInst);
-        objectInst.startFighting();
-    }
+function eatTimeout(objectInst) {
+    actionTimeout(objectInst, "eat")
 }
-function fightSetPic(objectInst){
- //   objectInst.fightFlag = false;
-    var myClass = objectInst.constructor.name;
-    var movementFlags = objectInst.movementFlags;
-    objectInst.domElement.setAttribute("src", `${myClass} gifs/fight/${myClass}_fight_${movementFlags.movingFlag}.gif`);
+function fightTimeout(objectInst){
+    actionTimeout(objectInst, "fight");
 }
 
 function shaiCheatPlusTen() {

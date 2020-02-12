@@ -11,19 +11,31 @@
 
     <title>Roving Bile Demon</title>
 </head>
+
 <body>
-    <div id="playerScore">0</div>
-    <div id="enemyScore">0</div>
+    <div id="HUD">
+        <div class="playerStats">
+            <div class="score" id="playerScore">0</div>
+            <div class="healthBar">
+                <div id="playerHealth"></div>
+            </div>
+        </div>
+        <div class="enemyStats">
+            <div class="healthBar">
+                <div id="enemyHealth"></div>
+            </div>
+            <div class="score" id="enemyScore">0</div>
+        </div>
+    </div>
     <div id="dungeon">
         <img src="Pics/Tiles2.png" class="back">
         <img id="bileD" src="Bile gifs/frames/Bile_S frame.gif" style="position:absolute;top:300px; left: 300px" />
-        <!-- <img id="chick" src="Pics/chicken.gif" style="position:absolute;top:300px; left: 500px" /> -->
     </div>
     <div id="bileModal" class="modal">
         <div class="modal-content">
-          
-          <button onclick="begin()">Release the Bile Demon!</button>
-          <p>You were warned...</p>
+
+            <button onclick="begin()">Release the Bile Demon!</button>
+            <p>You were warned...</p>
         </div>
     </div>
 
