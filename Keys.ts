@@ -9,31 +9,45 @@ window.addEventListener('keyup', function (e) {
 })
 
 function keyCommands(e: KeyboardEvent) {
-    if (e.keyCode == 49) {  // e.key === "1"
-        biledemon.passWind(thiefInst);
+    if (keys[50]) {
+        biledemon.fight();
     }
-    // else if (e.key === "2") {
-    //     Fart2.play();
-    // }
-    // else if (e.key === "3") {
-    //     Fart3.play();
-    // }
-    // else if (e.key === "4") {
-    //     Fart4.play();
-    // }
-    // else if (e.key === "5") {
-    //     Fart5.play();
-    // }
-    // else if (e.key === "6") {
-    //     Fart6.play();
-    // }
-    else if (e.key === "c") {
+    if (e.keyCode == 49) {  // e.key === "1"
+        biledemon.passWind();
+    }
+    else if (e.key === "o") {
         shaiCheatPlusTen();
         refreshChickCounter();
     }
     else if (e.key === "p") {
         chickenCollisionFunction(biledemon ,true);
     }
+}
+
+function KeysMoveCheck(objectInst: movingSprite) {
+    var movementFlags = objectInst.movementFlags;
+    movementFlags.oldFlag = movementFlags.movingFlag;
+    if (keys[37]) {
+        moveLeft(objectInst)
+        movementFlags.leftMovement = true;
+    }
+    else movementFlags.leftMovement = false;
+    if (keys[38]) {
+        moveUp(objectInst)
+        movementFlags.upMovement = true;
+    }
+    else movementFlags.upMovement = false;
+    if (keys[39]) {
+        moveRight(objectInst)
+        movementFlags.rightMovement = true;
+    }
+    else movementFlags.rightMovement = false;
+    if (keys[40]) {
+        moveDown(objectInst)
+        movementFlags.downMovement = true;
+    }
+    else movementFlags.downMovement = false;
+    objectInst.movementFlags = movementFlags;
 }
 
 //document.addEventListener('keydown', function (ev) {

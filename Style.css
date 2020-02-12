@@ -8,27 +8,46 @@
 body {
     overflow: hidden;
 }
-
+#HUD {
+    display: flex;
+    justify-content: space-between;
+    font-size: 40px;
+    font-family: impact;
+    height: auto;
+    z-index: 1;
+}
+.playerStats{
+    display: flex;
+    justify-content: flex-start;
+}
+.enemyStats{
+    display: flex;
+    justify-content: flex-end;
+}
+.enemyStats .healthBar{
+    justify-content: flex-end;
+}
+.healthBar {
+    display: flex;
+    align-items: center;
+    width: 300px;
+    z-index: 1;
+    margin: 20px;
+}
+.healthBar div{
+    width: 200px;
+    height: 30px;
+    background-color: red;
+}
+.score {
+    margin: 20px;
+    z-index: 1;
+}
 #playerScore {
     color: whitesmoke;
-    position: absolute;
-    padding: 20px;
-    z-index: 1;
-    font-size: 40px;
-    font-family: impact;
-    /* font: 30px, impact; */
 }
-
 #enemyScore {
     color: red;
-    position: absolute;
-    right: 0;
-    /* float: right; */
-    padding: 20px;
-    z-index: 1;
-    font-size: 40px;
-    font-family: impact;
-    /* font: 30px, impact; */
 }
 
 .modal {

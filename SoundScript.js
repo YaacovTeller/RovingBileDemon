@@ -40,4 +40,20 @@ var Spur1 = new sound("Sound/SPUR1.WAV");
 var Spur2 = new sound("Sound/SPUR2.WAV");
 var Spur3 = new sound("Sound/SPUR3.WAV");
 var Spur4 = new sound("Sound/SPUR4.WAV");
+var Swipe1 = new sound("Sound/Combat/SWIPE1.WAV");
+var Swipe2 = new sound("Sound/Combat/SWIPE2.WAV");
+var Swipe3 = new sound("Sound/Combat/SWIPE3.WAV");
+var Swipe4 = new sound("Sound/Combat/SWIPE4.WAV");
+var Swipe5 = new sound("Sound/Combat/SWIPE5.WAV");
+var Hit = new sound("Sound/Combat/FISTHIT.WAV");
+var windArray = [Fart1, Fart2, Fart3, Fart4, Fart5, Fart6];
+var walkArray = [Foot1, Foot2, Foot3, Foot4];
+var swipeArray = [Swipe1, Swipe2, Swipe3, Swipe4, Swipe5];
+var chickArray = [Chick1, Chick2, Chick3, Chick4, Chick5, Chick6];
 BileMove1.sound.setAttribute("loop", "infinite");
+function multiSoundSelector(soundArray) {
+    var num = soundArray.length;
+    var rand = Math.floor(Math.random() * num);
+    soundArray[rand].play();
+    return rand;
+}
