@@ -7,6 +7,7 @@ var biledemon;
 var chickenInst;
 var thiefInst;
 var enemyArray = [];
+var dungeon = document.getElementById("dungeon");
 function begin() {
     biledemon = new Bile();
     chickenInst = new chicken();
@@ -27,10 +28,14 @@ function update() {
     }
     ;
     for (var i = 0; i < enemyArray.length; i++) {
-        enemyArray[i].considerIntent();
-        if (enemyArray[i].intent == 'pursue') {
-            chase(enemyArray[i], biledemon);
-            collisionCheck(enemyArray[i], biledemon);
+        var _this = enemyArray[i];
+        _this.considerIntent();
+        if (_this.intent == 'pursue') {
+            chase(_this, biledemon);
+            if (collisionCheck(_this, biledemon)) {
+                _this.fight();
+            }
+            ;
         }
         else if (enemyArray[i].intent == 'eat') {
             chase(enemyArray[i], chickenInst);
@@ -80,22 +85,14 @@ function getRandomScreenPosition() {
     return randomPosition;
 }
 function chickenCollisionFunction(objectInst, cheat) {
-    var myClass = objectInst.constructor.name;
-    if (myClass == 'Bile') {
-        if (objectInst.movementFlags.eatFlag == false || cheat == true) {
-            objectInst.eatChick();
-            chickenInst.perish(objectInst);
-            chickenInst = new chicken();
-        }
+    if (objectInst.canEatAnotherChickenCheck(cheat)) {
+        genericChickenCollision(objectInst);
     }
-    else if (myClass == 'Thief') {
-        if (objectInst.stunFlag == false) {
-            objectInst.eatChick();
-            chickenInst.perish(objectInst);
-            chickenInst = new chicken();
-            //   objectInst.stopMoving();
-        }
-    }
+}
+function genericChickenCollision(objectInst) {
+    objectInst.eatChick();
+    chickenInst.perish(objectInst);
+    chickenInst = new chicken();
 }
 function setStyleVal(elem, prop, newVal) {
     elem.style[prop] = newVal + "px";
@@ -143,11 +140,19 @@ function eatTimeout(objectInst) {
 function fightTimeout(objectInst) {
     actionTimeout(objectInst, "fight");
 }
+function deathTimeout(objectInst) {
+    actionTimeout(objectInst, "die"); // CREATE NEW DEATH TIMEOUT
+}
 function shaiCheatPlusTen() {
     biledemon.chickensEaten += 10;
     // chicken.chickCount += 10;
 }
+function refreshIndivChickCounter(counter, num) {
+    counter.innerHTML = "" + num;
+}
 function refreshChickCounter() {
-    playerScore.innerHTML = "" + biledemon.chickensEaten; //chicken.chickCount;
-    enemyScore.innerHTML = "" + thiefInst.chickensEaten;
+    refreshIndivChickCounter(playerScore, biledemon.chickensEaten);
+    if (thiefInst) {
+        refreshIndivChickCounter(enemyScore, thiefInst.chickensEaten);
+    }
 }

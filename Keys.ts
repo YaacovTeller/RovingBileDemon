@@ -25,6 +25,9 @@ function keyCommands(e: KeyboardEvent) {
 }
 
 function KeysMoveCheck(objectInst: movingSprite) {
+    if (!objectInst.freeMovementCheck()){
+        return
+    }
     var movementFlags = objectInst.movementFlags;
     movementFlags.oldFlag = movementFlags.movingFlag;
     if (keys[37]) {

@@ -8,6 +8,16 @@
 body {
     overflow: hidden;
 }
+#bileD{
+    position:absolute;
+}
+.flame{
+    width: 25px;
+    position:absolute;
+    top: 0.3%;
+    left: 76%;
+}
+
 #HUD {
     display: flex;
     justify-content: space-between;
@@ -30,7 +40,7 @@ body {
 .healthBar {
     display: flex;
     align-items: center;
-    width: 300px;
+    /* width: 300px; */
     z-index: 1;
     margin: 20px;
 }

@@ -115,7 +115,7 @@ function domElementPos(obj, request) {
     return info;
 }
 function colCheckLeft(chaser, target) {
-    if (domElementInfo(chaser, 'left') > domElementInfo(target, 'left') + domElementPos(target, 'width') / 2) {
+    if (domElementInfo(chaser, 'left') > domElementInfo(target, 'left') + domElementPos(target, 'width')) { //FIX /2
         return false;
     }
     else

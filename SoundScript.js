@@ -15,9 +15,17 @@ function sound(src) {
 }
 var BileMove1 = new sound("Sound/BIGFOOT1.WAV");
 var BileMove2 = new sound("Sound/BIGFOOT2.WAV");
-var BileReady = new sound("Sound/HORNDROP.WAV");
-var BileHappy = new sound("Sound/HORNHAPY.WAV");
-var BileDie = new sound("Sound/HORNDIE1.WAV");
+var BileReady = new sound("Sound/Bilesound/HORNDROP.WAV");
+var BileHappy = new sound("Sound/Bilesound/HORNHAPY.WAV");
+var BileDie = new sound("Sound/Bilesound/HORNDIE1.WAV");
+var BileHit1 = new sound("Sound/Bilesound/HORNHIT1.WAV");
+var BileHit2 = new sound("Sound/Bilesound/HORNHIT2.WAV");
+var BileHit3 = new sound("Sound/Bilesound/HORNHIT3.WAV");
+var BileSlap = new sound("Sound/Bilesound/HORNSLAP.WAV");
+var BileSad = new sound("Sound/Bilesound/HORNSAD1.WAV");
+var BilePain1 = new sound("Sound/Bilesound/HORNTOR1.WAV");
+var BilePain2 = new sound("Sound/Bilesound/HORNTOR2.WAV");
+var BilePain3 = new sound("Sound/Bilesound/HORNTOR3.WAV");
 var Chick1 = new sound("Sound/CHICK1A.WAV");
 var Chick2 = new sound("Sound/CHICK1B.WAV");
 var Chick3 = new sound("Sound/CHICK1C.WAV");

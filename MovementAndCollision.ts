@@ -1,14 +1,14 @@
 var oldVal;
 var newVal;
-var options = {
+enum options  {
     // resetSpeed(speed) {
     //     options.step = speed;
     //     options.stepBack = -speed;
     // },
     // step: step,
     // stepBack: -step,
-    top: 'top',
-    left: 'left',
+    top= 'top',
+    left= 'left',
 };
 function moveLeft(object) {
     oldVal = getStyleVal(object.domElement, options.left);
@@ -100,14 +100,14 @@ function domElementPos(obj, request){
 }
 
 function colCheckLeft(chaser, target){
-    if (domElementInfo(chaser, 'left') > domElementInfo(target, 'left') + domElementPos(target, 'width')/2){
+    if (domElementInfo(chaser, 'left') > domElementInfo(target, 'left') + domElementPos(target, 'width')){ //FIX /2
         return false;
     }
     else return true;
 }
 function colCheckRight(chaser, target){
     var widthAdjust: number = chaser.widthAdjust;
-    if (domElementInfo(chaser, 'left') + domElementPos(chaser, 'width')/widthAdjust <= domElementInfo(target,'left') + domElementPos(target, 'width')){
+    if (domElementInfo(chaser, 'left') + domElementPos(chaser, 'width') / widthAdjust <= domElementInfo(target,'left') + domElementPos(target, 'width')){
         return false;
     }
     else return true;

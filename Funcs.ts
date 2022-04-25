@@ -7,6 +7,7 @@ var biledemon: Bile;
 var chickenInst: chicken;
 var thiefInst: Thief;
 var enemyArray: Array<movingSprite> = [];
+var dungeon = document.getElementById("dungeon");
 
 function begin() {
     biledemon = new Bile();
@@ -26,13 +27,25 @@ function update() {
     if (collisionCheck(biledemon, chickenInst)) {
         chickenCollisionFunction(biledemon, false); //only true for 'cheat'!
     };
+    allEnemyDecisions();
+}
+function allEnemyDecisions(){
     for (let i = 0; i < enemyArray.length; i++) {
-        enemyArray[i].considerIntent();
-        if (enemyArray[i].intent == 'pursue') {
-            chase(enemyArray[i], biledemon);
-            collisionCheck(enemyArray[i], biledemon);
+        let _this = enemyArray[i];
+        if(_this.activity.dead) continue
+        _this.considerIntent();
+        if (_this.intent == intents.persue) {
+            if (biledemon.activity.dying == false && biledemon.activity.dead == false){ // Put in SPRITE CLASS
+                chase(_this, biledemon);
+                if (collisionCheck(_this, biledemon)) {
+                    _this.fight();
+                };
+            }
+            else {
+                _this.intent = intents.loiter;
+            }
         }
-        else if (enemyArray[i].intent == 'eat') {
+        else if (enemyArray[i].intent == intents.seekFood) {
             chase(enemyArray[i], chickenInst);
             if (collisionCheck(enemyArray[i], chickenInst)) {
                 chickenCollisionFunction(enemyArray[i], false);
@@ -41,8 +54,8 @@ function update() {
     }
 }
 function chase(chaser: movingSprite, target: chicken | movingSprite) {  //Combine CHASE with COLLISION CHECK
-    if (chaser.stunFlag) {
-        chaser.stopNoise();
+    if (!chaser.freeMovementCheck() || chaser.activity.eat || chaser.activity.fight) {
+      //  chaser.stopNoise();
         return
     };
     setMovingFlag(chaser);
@@ -80,23 +93,15 @@ function getRandomScreenPosition() {
     return randomPosition
 }
 
-function chickenCollisionFunction(objectInst, cheat) {
-    var myClass = objectInst.constructor.name;
-    if (myClass == 'Bile') {
-        if (objectInst.movementFlags.eatFlag == false || cheat == true) {
-            objectInst.eatChick();
-            chickenInst.perish(objectInst);
-            chickenInst = new chicken();
-        }
+function chickenCollisionFunction(objectInst: Thief | Bile | movingSprite, cheat) {
+    if (objectInst.canEatAnotherChickenCheck(cheat)){
+        genericChickenCollision(objectInst);
     }
-    else if (myClass == 'Thief') {
-        if (objectInst.stunFlag == false) {
-            objectInst.eatChick();
-            chickenInst.perish(objectInst);
-            chickenInst = new chicken();
-            //   objectInst.stopMoving();
-        }
-    }
+}
+function genericChickenCollision(objectInst){
+    objectInst.eatChick();
+    chickenInst.perish(objectInst);
+    chickenInst = new chicken();
 }
 
 function setStyleVal(elem, prop, newVal) {
@@ -110,8 +115,8 @@ function getStyleVal(elem, prop) {
 }
 
 function setPicAndSound(objectInst: Bile | Thief | movingSprite) {
+    if (!objectInst.anyActionCheck()) { return };  ////////////////////// FIX?
     var movementFlags = objectInst.movementFlags;
-    if (movementFlags.eatFlag == true) { return };
     if (movementFlags.oldFlag != movementFlags.movingFlag) {
         if (movementFlags.movingFlag == "") {
             objectInst.stopMoving();
@@ -120,36 +125,45 @@ function setPicAndSound(objectInst: Bile | Thief | movingSprite) {
     }
 }
 
-function actionTimeout(objectInst, action) {
+function actionTimeout(objectInst: movingSprite, action) {
+    if (!objectInst.anyActionCheck()) { return };  ////////////////////// FIX?
+    objectInst.activity[action] = true;
     var myClass = objectInst.constructor.name;
     var movementFlags = objectInst.movementFlags;
-    let direction = action == "eat" ? "" : movementFlags.facing;
+    let direction = action == activity_strings.eat ? "" : movementFlags.facing;
     objectInst.domElement.setAttribute("src", `${myClass} gifs/${myClass}_${action}_${direction}.gif`);
 
-    movementFlags.eatFlag = true
     setTimeout(() => {
-        movementFlags.eatFlag = false
+        objectInst.activity[action] = false;
         if (movementFlags.movingFlag == "") {
             objectInst.stopMoving()
             objectInst.domElement.setAttribute("src", `${myClass} gifs/frames/${myClass}_${movementFlags.facing} frame.gif`);
         }
         else {
-            objectInst.startMoving();//Attempt to change from eating pic. Bad idea
+            objectInst.startMoving(); //Attempt to change from eating pic. Better implementation?
         }
     }, 1200);
 }
 function eatTimeout(objectInst) {
-    actionTimeout(objectInst, "eat")
+    actionTimeout(objectInst, activity_strings.eat)
 }
 function fightTimeout(objectInst) {
-    actionTimeout(objectInst, "fight");
+    actionTimeout(objectInst, activity_strings.fight);
+}
+function deathTimeout(objectInst){
+    actionTimeout(objectInst, activity_strings.die); // CREATE NEW DEATH TIMEOUT
 }
 
 function shaiCheatPlusTen() {
     biledemon.chickensEaten += 10;
     // chicken.chickCount += 10;
 }
+function refreshIndivChickCounter(counter: HTMLElement, num: number){
+    counter.innerHTML = "" + num;
+}
 function refreshChickCounter() {
-    playerScore.innerHTML = "" + biledemon.chickensEaten;//chicken.chickCount;
-    enemyScore.innerHTML = "" + thiefInst.chickensEaten;
+    refreshIndivChickCounter(playerScore, biledemon.chickensEaten);
+    if (thiefInst) {
+        refreshIndivChickCounter(enemyScore, thiefInst.chickensEaten);
+    }
 }
