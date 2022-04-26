@@ -1,112 +1,110 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var sprite = /** @class */ (function () {
-    function sprite() {
+var intents;
+(function (intents) {
+    intents["persue"] = "persue";
+    intents["seekFood"] = "eat";
+    intents["loiter"] = "nothing";
+})(intents || (intents = {}));
+var activity_strings;
+(function (activity_strings) {
+    activity_strings["eat"] = "eat";
+    activity_strings["fight"] = "fight";
+    activity_strings["die"] = "die";
+})(activity_strings || (activity_strings = {}));
+var compassPoints;
+(function (compassPoints) {
+})(compassPoints || (compassPoints = {}));
+const CharVarients = {
+    biledemon: {
+        name: "bile",
+        health: 100,
+        height: 100,
+        speed: 10,
+        power: 30,
+        sounds: {
+            pain: bileHitArray,
+            arrive: [BileReady],
+            move: bileMoveArray,
+            die: [BileDie],
+            attack: swipeArray,
+            hit: [Hit],
+        }
+    },
+    knight: {
+        name: "Knight",
+        health: 110,
+        height: 150,
+        speed: 5,
+        power: 15,
+        sounds: {
+            pain: manHitArray,
+            arrive: lordTauntArray,
+            move: spurArray,
+            die: manDieArray,
+            attack: swipeArray,
+            hit: [SwordHit],
+        }
+    },
+    thief: {
+        name: "Thief",
+        health: 80,
+        height: 75,
+        speed: 7,
+        power: 8,
+        sounds: {
+            pain: manHitArray,
+            arrive: manShoutArray,
+            move: walkArray,
+            die: manDieArray,
+            attack: swipeArray,
+            hit: [SwordHit],
+        }
+    }
+};
+class MovementFlags {
+}
+class sprite {
+    constructor() {
         this.draw();
     }
-    return sprite;
-}());
-var MovementFlags = /** @class */ (function () {
-    function MovementFlags() {
-    }
-    return MovementFlags;
-}());
-var movingSprite = /** @class */ (function (_super) {
-    __extends(movingSprite, _super);
-    function movingSprite() {
-        var _this_1 = _super.call(this) || this;
-        _this_1.movementFlags = new MovementFlags();
-        return _this_1;
-    }
-    movingSprite.prototype.updateHealthBar = function () {
-        this.healthBar.style.width = this.health * 2 + "px";
-    };
-    return movingSprite;
-}(sprite));
-var Bile = /** @class */ (function (_super) {
-    __extends(Bile, _super);
-    function Bile() {
-        var _this_1 = _super.call(this) || this;
-        _this_1.movementFlags = new MovementFlags();
-        _this_1.healthBar = document.getElementById("playerHealth");
-        _this_1.speed = 15;
-        _this_1.power = 30;
-        _this_1.heightAdjust = 5;
-        _this_1.widthAdjust = 1;
-        _this_1.chickensEaten = 0;
-        _this_1.movementFlags.oldFlag = _this_1.movementFlags.movingFlag = 'S';
-        _this_1.movementFlags.eatFlag = false;
-        _this_1.health = _this_1.startingHealth = 200;
-        _this_1.updateHealthBar();
-        return _this_1;
-    }
-    Bile.prototype.draw = function () {
-        dungeon.innerHTML += "<img id=\"bileD\" src=\"Bile gifs/frames/Bile_S frame.gif\" style=\"top:300px; left: 300px\" />";
-        this.domElement = document.getElementById("bileD");
-        this.height = this.domElement.clientHeight || 90; ///FIX THIS, height comes in late
+}
+class movingSprite extends sprite {
+    constructor() {
+        super();
+        this.movementFlags = new MovementFlags();
+        // for (let item in this.activity){
+        //     this.activity[item] = false;
+        // }
+        this.activity = {
+            dead: false,
+            dying: false,
+            stunned: false,
+            eat: false,
+            move: false,
+            fight: false
+        };
         this.AnnounceArrival();
-    };
-    Bile.prototype.eatChick = function () {
-        eatTimeout(this);
-        this.height += 10;
+    }
+    changeElementHeight(num) {
+        num = num || 0;
+        this.height += num;
         this.domElement.style.height = this.height + "px";
-        this.speed += 1.2;
-        this.power += 2;
-        this.health = this.health < 100 ? this.health += 10 : this.health;
+    }
+    setCharDetails() {
+        this.speed = this.charType.speed;
+        this.power = this.charType.power;
+        this.health = this.charType.health;
+        this.height = this.charType.height;
+    }
+    updateHealthBar() {
+        this.healthBar.style.width = this.health * 2 + "px";
+    }
+    eatChick() {
+        eatTimeout(this);
         this.updateHealthBar();
-    };
-    Bile.prototype.startMoving = function () {
-        this.startNoise();
-        this.domElement.setAttribute("src", "Bile gifs/Bile_" + this.movementFlags.movingFlag + ".gif");
-    };
-    ;
-    Bile.prototype.stopMoving = function () {
-        this.stopNoise();
-        this.domElement.setAttribute("src", "Bile gifs/frames/Bile_" + this.movementFlags.oldFlag + " frame.gif");
-    };
-    ;
-    Bile.prototype.AnnounceArrival = function () {
-        BileReady.play();
-    };
-    Bile.prototype.startNoise = function () {
-        BileMove1.play();
-    };
-    Bile.prototype.stopNoise = function () {
-        BileMove1.stop();
-    };
-    Bile.prototype.passWind = function () {
-        var num = multiSoundSelector(windArray);
-        for (var i = 0; i < enemyArray.length; i++) {
-            if (collisionCheck(biledemon, enemyArray[i])) {
-                enemyArray[i].stun(num);
-            }
-        }
-    };
-    Bile.prototype.fight = function () {
-        Swipe1.play();
-        fightTimeout(this);
-        var num = this.power;
-        for (var i = 0; i < enemyArray.length; i++) {
-            if (collisionCheck(biledemon, enemyArray[i])) {
-                enemyArray[i].hit(num);
-            }
-        }
-    };
-    Bile.prototype.considerIntent = function () { };
-    Bile.prototype.stun = function (num) { };
-    Bile.prototype.hit = function (severity) {
-        Hit.play();
+    }
+    hit(severity) {
+        if (!this.pulseCheck())
+            return;
         this.health -= severity;
         this.health = this.health > 0 ? this.health : 0;
         this.updateHealthBar();
@@ -114,158 +112,286 @@ var Bile = /** @class */ (function (_super) {
             this.death();
         }
         else
-            BileHit1.play();
-    };
-    Bile.prototype.death = function () {
-        BileDie.play();
-        this.domElement.setAttribute("src", "Bile gifs/bile_collapse.gif");
-        var _this = this;
-        setTimeout(function () {
-            _this.domElement.setAttribute("src", "Bile gifs/frames/bile_SE frame.gif");
-            _this.domElement = null;
-        }, 3000); // FIX
-        //   this.stunFlag = true;
-        //    this.intent = null;
-        this.stopMoving();
-    };
-    Bile.prototype.canEatAnotherChickenCheck = function (cheat) {
-        return this.movementFlags.eatFlag == false || cheat == true;
-    };
-    return Bile;
-}(movingSprite));
-var Thief = /** @class */ (function (_super) {
-    __extends(Thief, _super);
-    function Thief() {
-        var _this_1 = _super.call(this) || this;
-        _this_1.speed = 5;
-        _this_1.power = 10;
-        _this_1.movementFlags = new MovementFlags();
-        _this_1.healthBar = document.getElementById("enemyHealth");
-        _this_1.height = 73;
-        _this_1.heightAdjust = 5;
-        _this_1.widthAdjust = 2;
-        _this_1.chickensEaten = 0;
-        _this_1.movementFlags.oldFlag = 'S';
-        _this_1.stunFlag = false;
-        _this_1.health = 100;
-        _this_1.intent = "pursue";
-        _this_1.updateHealthBar();
-        return _this_1;
+            multiSoundSelector(this.charType.sounds.pain);
     }
-    Thief.prototype.draw = function () {
+    AnnounceArrival() {
+        multiSoundSelector(this.charType.sounds.arrive);
+    }
+    fight() {
+        if (this.anyActionCheck()) {
+            multiSoundSelector(this.charType.sounds.attack);
+            fightTimeout(this);
+        }
+    }
+    death() {
+        this.activity.dying = true;
+        this.stopMoving();
+        multiSoundSelector(this.charType.sounds.die);
+    }
+    startWalkingNoise() {
+        // this.mySteps = setInterval(()=>multiSoundSelector(this.charType.sounds.move), 500);
+        this.mySteps = setInterval(() => multiSoundSelector(this.charType.sounds.move, true), 500);
+    }
+    stopWalkingNoise() {
+        clearInterval(this.mySteps);
+        this.mySteps = 0;
+    }
+    pulseCheck() {
+        return this.activity.dying == false && this.activity.dead == false;
+    }
+    freeMovementCheck() {
+        return this.pulseCheck() && this.activity.stunned == false;
+    }
+    anyActionCheck() {
+        return this.freeMovementCheck() && this.activity.eat == false && this.activity.fight == false;
+    }
+}
+class Bile extends movingSprite {
+    constructor() {
+        super();
+        this.movementFlags = new MovementFlags();
+        this.healthBar = document.getElementById("playerHealth");
+        this.heightAdjust = 5;
+        this.widthAdjust = 1;
+        this.chickensEaten = 0;
+        this.movementFlags.oldFlag = this.movementFlags.movingFlag = 'S';
+        this.updateHealthBar();
+        this.setCharDetails();
+        this.changeElementHeight();
+    }
+    draw() {
+        this.selectCharType();
+        dungeon.innerHTML += `<img id="bileD" src="Bile gifs/frames/Bile_S frame.gif" style="top:300px; left: 300px" />`;
+        this.domElement = document.getElementById("bileD");
+        this.AnnounceArrival();
+    }
+    selectCharType() {
+        this.charType = CharVarients.biledemon;
+    }
+    eatChick() {
+        this.health = this.health < 120 ? this.health += 10 : this.health;
+        super.eatChick();
+        let growthRate = 10;
+        this.changeElementHeight(growthRate);
+        this.speed += 1;
+        this.power += 2;
+    }
+    startMoving() {
+        if (!this.mySteps || this.mySteps == 0) {
+            this.startWalkingNoise();
+        }
+        this.domElement.setAttribute("src", `Bile gifs/Bile_${this.movementFlags.movingFlag}.gif`);
+    }
+    ;
+    stopMoving() {
+        this.stopWalkingNoise();
+        this.domElement.setAttribute("src", `Bile gifs/frames/Bile_${this.movementFlags.oldFlag} frame.gif`);
+    }
+    ;
+    passWind() {
+        let num = multiSoundSelector(windArray);
+        for (let i = 0; i < enemyArray.length; i++) {
+            if (collisionCheck(biledemon, enemyArray[i])) {
+                enemyArray[i].stun(num);
+            }
+        }
+    }
+    fight() {
+        super.fight();
+        let num = this.power;
+        for (let i = 0; i < enemyArray.length; i++) {
+            if (collisionCheck(biledemon, enemyArray[i])) {
+                enemyArray[i].hit(num);
+                multiSoundSelector(this.charType.sounds.hit);
+            }
+        }
+    }
+    considerIntent() { }
+    stun(num) { }
+    loiter() { }
+    death() {
+        super.death();
+        BileDie.play();
+        this.domElement.setAttribute("src", `Bile gifs/bile_collapse_.gif`);
+        let _this = this;
+        setTimeout(() => {
+            _this.domElement.setAttribute("src", `Bile gifs/frames/bile_SE frame.gif`);
+            _this.activity.dead = true;
+        }, 3000); // FIX
+    }
+    canEatAnotherChickenCheck(cheat) {
+        return this.activity.eat == false || cheat == true;
+    }
+}
+class Enemy extends movingSprite {
+    constructor() {
+        super();
+        this.movementFlags = new MovementFlags();
+        this.healthBar = document.getElementById("enemyHealth");
+        //  public height: number = 73;
+        this.heightAdjust = 5;
+        this.widthAdjust = 2;
+        this.chickensEaten = 0;
+        this.movementFlags.oldFlag = 'S';
+        this.health = 100;
+        this.intent = intents.persue;
+        this.updateHealthBar();
+    }
+    draw() {
+        this.selectCharType();
         //      let randomPosition = getRandomScreenPosition();        //Random pos?
-        var newThief = "<img id=\"thief" + Thief.thiefCount + "\" src=\"Thief gifs/thief_W.gif\" style=\"position:absolute; top:" + Thief.thiefStartPosition.top + "px; left:" + Thief.thiefStartPosition.left + "px\" />";
-        newThiefBox.innerHTML += newThief;
-        this.domElement = document.getElementById("thief" + Thief.thiefCount);
-        //    this.height = this.domElement.clientHeight;
-    };
-    Thief.prototype.considerIntent = function () {
+        Enemy.enemyCount++;
+        var newEnemy = `<img id="enemy${Enemy.enemyCount}" src="${this.charType.name} gifs/${this.charType.name}_W.gif" style="position:absolute; top:${Enemy.enemyStartPosition.top}px; left:${Enemy.enemyStartPosition.left}px" />`;
+        newEnemyBox.innerHTML += newEnemy;
+        this.domElement = document.getElementById(`enemy${Enemy.enemyCount}`);
+        this.setCharDetails();
+        this.changeElementHeight();
+    }
+    selectCharType() {
+        this.charType = Math.round(Math.random()) == 1 ? CharVarients.thief : CharVarients.knight;
+    }
+    considerIntent() {
         if (this.health <= 0) {
             this.intent = null;
         }
-        else {
-            this.intent = this.health < 50 ? "eat" : "pursue";
+        else if (!biledemon.pulseCheck()) {
+            this.intent = intents.loiter;
         }
-    };
-    Thief.prototype.eatChick = function () {
-        eatTimeout(this);
-        this.height += 8;
-        this.domElement.style.height = this.height + "px";
-        this.speed += 0.5;
+        else {
+            this.intent = this.health < 50 ? intents.seekFood : intents.persue;
+        }
+    }
+    loiter_roving() {
+        chase(this, this.idleTarget);
+    }
+    loiter_standing() {
+    }
+    loiter() {
+        let myClass = this.charType.name;
+        this.stopMoving(); //// HACK, should happen at setpicandsound
+        //  this.domElement.src = `${myClass} gifs/frames/${myClass}_${this.movementFlags.facing} frame.gif`;
+        this.domElement.src = `${myClass} gifs/${myClass}_rest.gif`;
+        this.domElement.onerror = () => this.domElement.src = `${myClass} gifs/${myClass}_rest.gif`;
+        // if (!this.idleTarget || this.idleTarget.pointReached != false){
+        //     let pos:position = {top:parseInt(this.domElement.style.top), left:parseInt(this.domElement.style.left)}
+        //     this.idleTarget = new targetPoint(pos);
+        //   //  this.speed /=5;
+        //     let myClass = this.charType.name;
+        //     this.domElement.src = `${myClass} gifs/frames/${myClass}_${this.movementFlags.facing} frame.gif`;
+        //     setTimeout(() => {
+        //         this.idleTarget.pointReached = false
+        //     }, 3000);
+        // }
+        // this.loiter_roving();
+        // if (collisionCheck(this,this.idleTarget)){
+        //     this.idleTarget.pointReached = true;
+        // }
+    }
+    eatChick() {
         this.health = this.health < 100 ? this.health += 10 : this.health;
-        this.updateHealthBar();
-    };
-    Thief.prototype.fight = function () {
-        if (this.movementFlags.eatFlag == true)
+        super.eatChick();
+        let growthRate = 10;
+        this.changeElementHeight(growthRate);
+        this.speed += 0.5;
+        this.power += 2;
+    }
+    fight() {
+        if (!this.anyActionCheck())
             return; //FIX
-        Swipe1.play();
-        fightTimeout(this);
-        var num = this.power;
+        super.fight();
+        let num = this.power;
         if (collisionCheck(this, biledemon)) {
             biledemon.hit(num);
+            multiSoundSelector(this.charType.sounds.hit);
         }
-    };
-    Thief.prototype.stun = function (severity) {
-        var timeout = severity * 1000;
-        this.domElement.setAttribute("src", "Thief gifs/thief_collapse.gif");
-        this.movementFlags.oldFlag = this.movementFlags.movingFlag = "";
-        this.stunFlag = true;
-        var this_ = this;
-        setTimeout(function () {
-            this_.stunFlag = false;
-        }, timeout);
-    };
-    Thief.prototype.hit = function (severity) {
-        Hit.play();
-        this.health -= severity;
-        this.health = this.health > 0 ? this.health : 0;
-        this.updateHealthBar();
-        if (this.health <= 0) {
-            this.death();
-        }
-    };
-    Thief.prototype.death = function () {
-        this.domElement.setAttribute("src", "Thief gifs/thief_collapse.gif");
-        this.stunFlag = true;
-        this.domElement = null;
-        this.intent = null;
-        this.stopMoving();
-        spawnEnemy(Thief);
-    };
-    Thief.prototype.startMoving = function () {
-        if (!this.mySteps || this.mySteps == 0) {
-            this.startNoise();
-        }
-        this.domElement.setAttribute("src", "Thief gifs/thief_" + this.movementFlags.movingFlag + ".gif");
-        //this.domElement.setAttribute("src", `Thief gifs/thief_SW.gif`)
-    };
-    Thief.prototype.stopMoving = function () {
-        this.stopNoise();
-        this.domElement.setAttribute("src", "Thief gifs/thief_" + this.movementFlags.oldFlag + ".gif"); /////// CHANGE TO FRAME
-    };
-    Thief.prototype.startNoise = function () {
-        this.mySteps = setInterval(function () { return multiSoundSelector(walkArray); }, 500);
-    };
-    Thief.prototype.stopNoise = function () {
-        clearInterval(this.mySteps);
-        this.mySteps = 0;
-    };
-    Thief.prototype.canEatAnotherChickenCheck = function () {
-        this.stunFlag == false;
-    };
-    Thief.thiefCount = 0;
-    Thief.thiefStartPosition = {
-        left: screen.width - 30,
-        top: screen.height / 2
-    };
-    return Thief;
-}(movingSprite));
-var chicken = /** @class */ (function (_super) {
-    __extends(chicken, _super);
-    function chicken() {
-        return _super.call(this) || this;
     }
-    chicken.prototype.draw = function () {
+    collapse() {
+        this.domElement.setAttribute("src", `${this.charType.name} gifs/${this.charType.name}_collapse.gif` + "?a=" + Math.random());
+    }
+    stun(severity) {
+        var timeout = severity * 1000;
+        this.collapse();
+        this.movementFlags.oldFlag = this.movementFlags.movingFlag = "";
+        this.activity.stunned = true;
+        let this_ = this;
+        setTimeout(function () {
+            this_.activity.stunned = false;
+        }, timeout);
+    }
+    death() {
+        super.death();
+        this.collapse();
+        this.activity.dead = true;
+        this.stopWalkingNoise();
+        setTimeout(() => {
+            spawnEnemy(Enemy);
+        }, 1500);
+    }
+    startMoving() {
+        if (!this.mySteps || this.mySteps == 0) {
+            this.startWalkingNoise();
+        }
+        this.domElement.setAttribute("src", `${this.charType.name} gifs/${this.charType.name}_${this.movementFlags.movingFlag}.gif`);
+        //this.domElement.setAttribute("src", `Thief gifs/thief_SW.gif`)
+    }
+    stopMoving() {
+        this.stopWalkingNoise();
+        this.domElement.setAttribute("src", `${this.charType.name} gifs/${this.charType.name}_${this.movementFlags.oldFlag}.gif`); /////// CHANGE TO FRAME
+    }
+    canEatAnotherChickenCheck() {
+        return this.activity.eat == false;
+    }
+}
+Enemy.enemyCount = 0;
+Enemy.enemyStartPosition = {
+    left: screen.width - 30,
+    top: screen.height / 2
+};
+class targetPoint extends sprite {
+    constructor(pos) {
+        super();
+        this.position = pos;
+    }
+    draw() {
+        this.domElement = document.createElement("img");
+        dungeon.appendChild(this.domElement);
+        this.shift();
+    }
+    assignCurrentPosition() {
+        this.domElement.style.top = this.position.top + 'px';
+        this.domElement.style.left = this.position.left + 'px';
+    }
+    shift() {
+        let randomPosition = getRandomScreenPosition(this.position);
+        this.position = randomPosition;
+        this.domElement.style.position = 'absolute';
+        this.assignCurrentPosition();
+    }
+}
+class chicken extends sprite {
+    constructor() {
+        super();
+    }
+    draw() {
         var randomPosition = getRandomScreenPosition();
-        var newChick = "<img id=\"chick" + chicken.chickCount + "\" src=\"Pics/chicken.gif\" style=\"position:absolute; top:" + randomPosition.randomTop + "px; left:" + randomPosition.randomLeft + "px\" />";
+        var newChick = `<img id="chick${chicken.chickCount}" src="Pics/chicken.gif" style="position:absolute; top:${randomPosition.top}px; left:${randomPosition.left}px" />`;
         newChickBox.innerHTML += newChick;
-        this.domElement = document.getElementById("chick" + chicken.chickCount);
+        this.domElement = document.getElementById(`chick${chicken.chickCount}`);
         this.cluck();
-    };
-    chicken.prototype.chickSounds = function () {
+    }
+    chickSounds() {
         multiSoundSelector(chickArray);
-    };
-    chicken.prototype.cluck = function () {
+    }
+    cluck() {
         this.myCluck = setInterval(this.chickSounds, 3000);
-    };
-    chicken.prototype.perish = function (eater) {
+    }
+    perish(eater) {
         ChickDie1.play();
         this.domElement.parentNode.removeChild(this.domElement);
         clearInterval(this.myCluck);
         eater.chickensEaten += 1;
         // chicken.chickCount++;
         refreshChickCounter();
-    };
-    chicken.chickCount = 0;
-    return chicken;
-}(sprite));
+    }
+}
+chicken.chickCount = 0;

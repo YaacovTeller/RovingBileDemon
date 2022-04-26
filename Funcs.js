@@ -2,53 +2,74 @@ var modal = document.getElementById("bileModal");
 var playerScore = document.getElementById("playerScore");
 var enemyScore = document.getElementById("enemyScore");
 var newChickBox = document.getElementById("newChickBox");
-var newThiefBox = document.getElementById("newThiefBox");
+var newEnemyBox = document.getElementById("newEnemyBox");
 var biledemon;
 var chickenInst;
-var thiefInst;
+var enemyInst;
 var enemyArray = [];
 var dungeon = document.getElementById("dungeon");
 function begin() {
     biledemon = new Bile();
     chickenInst = new chicken();
-    spawnEnemy(Thief);
+    spawnEnemy(Enemy);
     setInterval(update, 50);
     modal.style.display = "none";
 }
 function spawnEnemy(enemyClass) {
-    thiefInst = new enemyClass();
-    enemyArray.push(thiefInst);
+    enemyInst = new enemyClass();
+    enemyArray.push(enemyInst);
 }
 function update() {
     KeysMoveCheck(biledemon); //handles actual movement
     setMovingFlag(biledemon); //ascertains compass direction
     setPicAndSound(biledemon); //handles gif direction
+    allEnemyDecisions();
     if (collisionCheck(biledemon, chickenInst)) {
         chickenCollisionFunction(biledemon, false); //only true for 'cheat'!
     }
     ;
-    for (var i = 0; i < enemyArray.length; i++) {
-        var _this = enemyArray[i];
-        _this.considerIntent();
-        if (_this.intent == 'pursue') {
-            chase(_this, biledemon);
-            if (collisionCheck(_this, biledemon)) {
-                _this.fight();
-            }
-            ;
+    for (let i = 0; i < enemyArray.length; i++) {
+        let enemy = enemyArray[i];
+        if (!enemy.pulseCheck())
+            continue; ///// NEEDED??
+        if (collisionCheck(enemyArray[i], chickenInst)) {
+            chickenCollisionFunction(enemyArray[i], false);
         }
-        else if (enemyArray[i].intent == 'eat') {
-            chase(enemyArray[i], chickenInst);
-            if (collisionCheck(enemyArray[i], chickenInst)) {
-                chickenCollisionFunction(enemyArray[i], false);
+        ;
+        if (collisionCheck(enemy, biledemon)) {
+            if (biledemon.pulseCheck()) {
+                enemy.fight(); //// called from here?
             }
-            ;
+        }
+        ;
+    }
+}
+function allEnemyDecisions() {
+    for (let i = 0; i < enemyArray.length; i++) {
+        let enemy = enemyArray[i];
+        if (!enemy.pulseCheck())
+            continue; //// NEEDED??
+        enemy.considerIntent();
+        switch (enemy.intent) {
+            case intents.loiter:
+                enemy.loiter();
+                break;
+            case intents.persue:
+                if (biledemon.pulseCheck()) {
+                    chase(enemy, biledemon);
+                }
+                break;
+            case intents.seekFood:
+                chase(enemy, chickenInst);
+                break;
+            default:
+                break;
         }
     }
 }
 function chase(chaser, target) {
-    if (chaser.stunFlag) {
-        chaser.stopNoise();
+    if (!chaser.anyActionCheck()) {
+        //  chaser.stopNoise();
         return;
     }
     ;
@@ -73,15 +94,22 @@ function chase(chaser, target) {
         collisionCheckFlag = false;
     }
     if (collisionCheckFlag == true) {
+        console.log(chaser.constructor.name + " collided!");
     }
 }
-function getRandomScreenPosition() {
-    var randomPosition = {
-        randomLeft: 0,
-        randomTop: 0
+function getRandomScreenPosition(top, left) {
+    let randomPosition = {
+        left: 0,
+        top: 0
     };
-    randomPosition.randomLeft = 40 + Math.round(Math.random() * (screen.width - 100));
-    randomPosition.randomTop = 80 + Math.round(Math.random() * (screen.height - 200));
+    if (top) {
+        randomPosition.left = Math.round(Math.random()) == 1 ? left + 10 : left - 10;
+        randomPosition.top = Math.round(Math.random()) == 1 ? top + 10 : top - 10;
+    }
+    else {
+        randomPosition.left = 40 + Math.round(Math.random() * (screen.width - 100));
+        randomPosition.top = 80 + Math.round(Math.random() * (screen.height - 200));
+    }
     return randomPosition;
 }
 function chickenCollisionFunction(objectInst, cheat) {
@@ -104,11 +132,11 @@ function getStyleVal(elem, prop) {
     return parseInt(elem.style[prop]);
 }
 function setPicAndSound(objectInst) {
-    var movementFlags = objectInst.movementFlags;
-    if (movementFlags.eatFlag == true) {
+    if (!objectInst.anyActionCheck()) {
         return;
     }
-    ;
+    ; ////////////////////// FIX?
+    var movementFlags = objectInst.movementFlags;
     if (movementFlags.oldFlag != movementFlags.movingFlag) {
         if (movementFlags.movingFlag == "") {
             objectInst.stopMoving();
@@ -118,30 +146,36 @@ function setPicAndSound(objectInst) {
     }
 }
 function actionTimeout(objectInst, action) {
-    var myClass = objectInst.constructor.name;
+    if (!objectInst.anyActionCheck()) {
+        return;
+    }
+    ; ////////////////////// FIX?
+    objectInst.activity[action] = true;
+    var myClass = objectInst.charType ? objectInst.charType.name : objectInst.constructor.name;
     var movementFlags = objectInst.movementFlags;
-    var direction = action == "eat" ? "" : movementFlags.facing;
-    objectInst.domElement.setAttribute("src", myClass + " gifs/" + myClass + "_" + action + "_" + direction + ".gif");
-    movementFlags.eatFlag = true;
-    setTimeout(function () {
-        movementFlags.eatFlag = false;
+    let direction = action == activity_strings.eat ? "" : movementFlags.facing;
+    let img = objectInst.domElement;
+    img.setAttribute("src", `${myClass} gifs/${myClass}_${action}_${direction}.gif`);
+    img.onerror = () => img.src = `${myClass} gifs/${myClass}_${action}.gif`; //"Pics/flame.gif";
+    setTimeout(() => {
+        objectInst.activity[action] = false;
         if (movementFlags.movingFlag == "") {
             objectInst.stopMoving();
-            objectInst.domElement.setAttribute("src", myClass + " gifs/frames/" + myClass + "_" + movementFlags.facing + " frame.gif");
+            objectInst.domElement.src = `${myClass} gifs/frames/${myClass}_${movementFlags.facing} frame.gif`;
         }
         else {
-            objectInst.startMoving(); //Attempt to change from eating pic. Bad idea
+            objectInst.startMoving(); //Attempt to change from eating pic. Better implementation?
         }
     }, 1200);
 }
 function eatTimeout(objectInst) {
-    actionTimeout(objectInst, "eat");
+    actionTimeout(objectInst, activity_strings.eat);
 }
 function fightTimeout(objectInst) {
-    actionTimeout(objectInst, "fight");
+    actionTimeout(objectInst, activity_strings.fight);
 }
 function deathTimeout(objectInst) {
-    actionTimeout(objectInst, "die"); // CREATE NEW DEATH TIMEOUT
+    actionTimeout(objectInst, activity_strings.die); // CREATE NEW DEATH TIMEOUT
 }
 function shaiCheatPlusTen() {
     biledemon.chickensEaten += 10;
@@ -152,7 +186,7 @@ function refreshIndivChickCounter(counter, num) {
 }
 function refreshChickCounter() {
     refreshIndivChickCounter(playerScore, biledemon.chickensEaten);
-    if (thiefInst) {
-        refreshIndivChickCounter(enemyScore, thiefInst.chickensEaten);
+    if (enemyInst) {
+        refreshIndivChickCounter(enemyScore, enemyInst.chickensEaten);
     }
 }

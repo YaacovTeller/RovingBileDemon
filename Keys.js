@@ -23,6 +23,9 @@ function keyCommands(e) {
     }
 }
 function KeysMoveCheck(objectInst) {
+    if (!objectInst.freeMovementCheck()) {
+        return;
+    }
     var movementFlags = objectInst.movementFlags;
     movementFlags.oldFlag = movementFlags.movingFlag;
     if (keys[37]) {

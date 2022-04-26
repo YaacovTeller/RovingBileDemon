@@ -1,40 +1,34 @@
 var oldVal;
 var newVal;
-enum options  {
-    // resetSpeed(speed) {
-    //     options.step = speed;
-    //     options.stepBack = -speed;
-    // },
-    // step: step,
-    // stepBack: -step,
+enum EOptions  {
     top= 'top',
     left= 'left',
 };
 function moveLeft(object) {
-    oldVal = getStyleVal(object.domElement, options.left);
+    oldVal = getStyleVal(object.domElement, EOptions.left);
     if (oldVal > 40 - object.domElement.width / 3) {
-        Move(object.domElement, options.left, -object.speed);
+        Move(object.domElement, EOptions.left, -object.speed);
         object.movementFlags.leftMovement = true;
     }
 }
 function moveRight(object) {
-    oldVal = getStyleVal(object.domElement, options.left);
+    oldVal = getStyleVal(object.domElement, EOptions.left);
     if (oldVal < screen.width - object.domElement.width) {   //-200
-        Move(object.domElement, options.left, object.speed);
+        Move(object.domElement, EOptions.left, object.speed);
         object.movementFlags.rightMovement = true;
     }
 }
 function moveUp(object) {
-    oldVal = getStyleVal(object.domElement, options.top);
+    oldVal = getStyleVal(object.domElement, EOptions.top);
     if (oldVal > 5000 / object.domElement.height) {
-        Move(object.domElement, options.top, -object.speed);
+        Move(object.domElement, EOptions.top, -object.speed);
         object.movementFlags.upMovement = true;
     }
 }
 function moveDown(object) {
-    oldVal = getStyleVal(object.domElement, options.top);
+    oldVal = getStyleVal(object.domElement, EOptions.top);
     if (oldVal + object.domElement.height < screen.height - 100) {
-        Move(object.domElement, options.top, object.speed);
+        Move(object.domElement, EOptions.top, object.speed);
         object.movementFlags.downMovement = true;
     }
 }
@@ -107,7 +101,7 @@ function colCheckLeft(chaser, target){
 }
 function colCheckRight(chaser, target){
     var widthAdjust: number = chaser.widthAdjust;
-    if (domElementInfo(chaser, 'left') + domElementPos(chaser, 'width') / widthAdjust <= domElementInfo(target,'left') + domElementPos(target, 'width')){
+    if (domElementInfo(chaser, 'left') + domElementPos(chaser, 'width') / widthAdjust <= domElementInfo(target,'left')){
         return false;
     }
     else return true;
