@@ -1,7 +1,8 @@
 # RovingBileDemon
 
-You are a hungry Bile Demon, and your chicken supply is threatened by a thief.
-Eat chickens quickly and grow, before he does.
-The '1' key is, at present, your only means of slowing him. Try it out.
+You are a hungry Bile Demon, and your chicken supply is threatened by heroes.
+Eat chickens quickly and grow, before they do.
+The '1' key is a means of slowing him. Try it out.
+The '2' key is a regular head-swing attack.
 
-To add: End game, combat/eating, levels?, health/gas meter?
+To add: End game, levels?, health/gas meter?
